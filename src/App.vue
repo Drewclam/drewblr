@@ -1,34 +1,42 @@
 <template>
   <div id="app">
-    <my-content
-      v-bind:apiData="data">
+    <my-content>
     </my-content>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import MyContent from './components/my-content';
 import { config } from '../config/config.js';
+import tumblr from 'tumblr.js';
+
+import MyContent from './components/my-content';
 
 export default {
   name: 'App',
   components: {
     MyContent,
   },
-  created() {
-    this.fetchData().then(data => this.data = data);
-  },
   data() {
-    return { 
-      apiUrl: `https://api.tumblr.com/v2/blog/${config.name}/posts?api_key=${config.api_key}`,
-      data: [],
+    return {
+      client: null,
     };
   },
+  created() {
+    this.client = this.initClient();
+    this.client.blogPosts(`${config.name}.tumblr.com`, function (err, data) {
+      console.log(data);
+      data.posts.forEach(post => console.log(post.state));
+    });
+  },
   methods: {
-    fetchData: function() {
-      return axios.get(this.apiUrl).then(res => res.data.response.posts);
-    }
+    initClient: function() {
+      return tumblr.createClient({
+        consumer_key: config.consumer_key,
+        consumer_secret: config.consumer_secret,
+        token: config.token,
+        token_secret: config.token_secret,
+      });
+    },
   },
 }
 </script>
