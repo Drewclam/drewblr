@@ -1,18 +1,35 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld/>
+    <my-content
+      v-bind:apiData="data">
+    </my-content>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import axios from 'axios';
+import MyContent from './components/my-content';
+import { config } from '../config/config.js';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    MyContent,
+  },
+  created() {
+    this.fetchData().then(data => this.data = data);
+  },
+  data() {
+    return { 
+      apiUrl: `https://api.tumblr.com/v2/blog/${config.name}/posts?api_key=${config.api_key}`,
+      data: [],
+    };
+  },
+  methods: {
+    fetchData: function() {
+      return axios.get(this.apiUrl).then(res => res.data.response.posts);
+    }
+  },
 }
 </script>
 
