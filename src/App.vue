@@ -1,7 +1,10 @@
 <template>
   <div id="app">
-    <my-content>
-    </my-content>
+    <input placeholder="filter criteria" />
+    <button>Set filter criteria</button>
+    <my-content v-bind:data="images"></my-content>
+    <button>Load more images</button>
+    <!-- feature: hamburger menu -->
   </div>
 </template>
 
@@ -18,15 +21,26 @@ export default {
   },
   data() {
     return {
-      client: null,
+      images: [],
+      videos: [],
     };
   },
   created() {
-    this.client = this.initClient();
-    this.client.blogPosts(`${config.name}.tumblr.com`, function (err, data) {
-      console.log(data);
-      data.posts.forEach(post => console.log(post.state));
-    });
+    const client = this.initClient();
+    client.blogPosts(`${config.name}.tumblr.com`, ((err, data) => {
+      data.posts.forEach(post => {
+        switch (post.type) {
+          case 'photo':
+            this.images.push(post);
+            break;
+          case 'video':
+            this.videos.push(post);
+            break;
+          default:
+            break;
+        }
+      });
+    }).bind(this));
   },
   methods: {
     initClient: function() {
