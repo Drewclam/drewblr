@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { config } from '../config/config.js';
+import config from '../config/config.js';
 import tumblr from 'tumblr.js';
 
 import MyContent from './components/my-content';
