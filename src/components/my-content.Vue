@@ -1,12 +1,9 @@
 <template class="flex w-100 flex-wrap">
-  <div v-if="posts">
-    <img 
-      v-for="(post, index) in posts"
-      v-if="post.photos"
-      v-bind:key="index"
-      v-bind:src="post.photos[0].original_size.url" />
-      <!-- v-bind:height="post.photos[0].alt_sizes[4].height"
-      v-bind:width="post.photos[0].alt_sizes[4].width" -->
+  <div>
+    <template v-for="(post, index) in posts">
+      <img v-bind:key="index" v-if="post.type==='photo'" v-bind:src="post.photos[0].original_size.url" />
+      <video v-bind:key="index" v-else v-bind:src="post.video_url" controls></video>
+    </template>
   </div>
 </template>
 
@@ -14,5 +11,10 @@
 export default {
   name: 'MyContent',
   props: ['posts'],
+  watch: {
+    posts: function(recent, old) {
+      console.log(recent.forEach(data => console.log(data.type)));
+    }
+  }
 }
 </script>

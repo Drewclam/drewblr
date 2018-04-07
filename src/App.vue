@@ -29,7 +29,7 @@ export default {
   created() {
     const client = this.initClient();
 
-    this.getPosts(client).then((posts) => this.posts = posts);
+    this.getPosts(client, 20).then((posts) => this.posts = posts);
   },
   methods: {
     initClient: function() {
@@ -43,9 +43,9 @@ export default {
         returnPromises: true,
       });
     },
-    getPosts: function(client) {
+    getPosts: function(client, limit) {
       return client
-        .blogPosts(`${config.name}.tumblr.com`)
+        .blogPosts(`${config.name}.tumblr.com`, {limit: limit})
         .then((res) => res.posts)
         .catch((err) => console.error(err));
     }
