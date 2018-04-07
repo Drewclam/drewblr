@@ -13,7 +13,7 @@ export default {
   props: ['posts'],
   watch: {
     posts: function(recent, old) {
-      console.log(recent.forEach(data => console.log(data.type)));
+      // console.log(recent.forEach(data => console.log(data.type)));
     }
   }
 }

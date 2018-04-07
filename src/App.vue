@@ -2,8 +2,8 @@
   <div id="app">
     <input placeholder="filter criteria" />
     <button>Set filter criteria</button>
+    <button v-on:click="renderPosts(limit += 20)">Load Posts</button>
     <my-content v-bind:posts="posts"></my-content>
-    <button v-on:click="getPosts">Load more images</button>
     <!-- feature: hamburger menu -->
   </div>
 </template>
@@ -24,12 +24,16 @@ export default {
       images: [],
       videos: [],
       posts: null,
+      limit: 20,
     };
   },
+  computed: {
+    client: function() {
+      return this.initClient();
+    },
+  },
   created() {
-    const client = this.initClient();
-
-    this.getPosts(client, 20).then((posts) => this.posts = posts);
+    this.renderPosts(this.limit);
   },
   methods: {
     initClient: function() {
@@ -45,9 +49,16 @@ export default {
     },
     getPosts: function(client, limit) {
       return client
-        .blogPosts(`${config.name}.tumblr.com`, {limit: limit})
+        .blogPosts(`${config.name}.tumblr.com`, {limit: limit, offset: limit})
         .then((res) => res.posts)
         .catch((err) => console.error(err));
+    },
+    renderPosts: function(limit) {
+      console.log(limit);
+      this.getPosts(this.client, limit).then((posts) => {
+        console.log('retrieved posts: ', posts);
+        this.posts = posts;
+      });
     }
   }
 }
