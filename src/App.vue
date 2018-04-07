@@ -2,8 +2,8 @@
   <div id="app">
     <input placeholder="filter criteria" />
     <button>Set filter criteria</button>
-    <my-content v-bind:data="images"></my-content>
-    <button>Load more images</button>
+    <my-content v-bind:posts="posts"></my-content>
+    <button v-on:click="getPosts">Load more images</button>
     <!-- feature: hamburger menu -->
   </div>
 </template>
@@ -23,35 +23,33 @@ export default {
     return {
       images: [],
       videos: [],
+      posts: null,
     };
   },
   created() {
     const client = this.initClient();
-    client.blogPosts(`${config.name}.tumblr.com`, ((err, data) => {
-      data.posts.forEach(post => {
-        switch (post.type) {
-          case 'photo':
-            this.images.push(post);
-            break;
-          case 'video':
-            this.videos.push(post);
-            break;
-          default:
-            break;
-        }
-      });
-    }).bind(this));
+
+    this.getPosts(client).then((posts) => this.posts = posts);
   },
   methods: {
     initClient: function() {
       return tumblr.createClient({
-        consumer_key: config.consumer_key,
-        consumer_secret: config.consumer_secret,
-        token: config.token,
-        token_secret: config.token_secret,
+        credentials: {
+          consumer_key: config.consumer_key,
+          consumer_secret: config.consumer_secret,
+          token: config.token,
+          token_secret: config.token_secret,
+        },
+        returnPromises: true,
       });
     },
-  },
+    getPosts: function(client) {
+      return client
+        .blogPosts(`${config.name}.tumblr.com`)
+        .then((res) => res.posts)
+        .catch((err) => console.error(err));
+    }
+  }
 }
 </script>
 
